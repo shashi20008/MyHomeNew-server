@@ -1,17 +1,19 @@
 'use strict';
 
+const nconf = require('nconf');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
-module.exports.connect = () => {
-    const user = process.env.MONGO_DB_USER;
-    const password = process.env.MONGO_DB_PASS;
-    const host = process.env.MONGO_DB_HOST;
-    const port = process.env.MONGO_DB_PORT;
+nconf.env().file({ file: 'config/config.json' });
 
-    mongoose.connect(`mongodb://${user}:${password}@${host}:${port}/myhomenew`, {
+module.exports.connect = () => {
+    const user = encodeURIComponent(nconf.get('MONGO_DB_USER'));
+    const password = encodeURIComponent(nconf.get('MONGO_DB_PASS'));
+    const host = nconf.get('MONGO_DB_HOST');
+
+    mongoose.connect(`mongodb+srv://${user}:${password}@${host}/myhomenew?retryWrites=true&w=majority`, { 
         useNewUrlParser: true,
-        autoIndex: false
+        useUnifiedTopology: true
     })
     .then(() => {
         console.log('connected to db');

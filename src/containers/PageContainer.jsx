@@ -8,13 +8,13 @@ import Nav from '../components/nav';
 import LoginComponent from '../components/login';
 import SideNav from '../components/side-nav';
 import MainSectionContainer from './MainSectionContainer';
-
-import '../css/slider.less';
+import RegistrationModal from '../components/register';
 
 class PageContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            registering: false,
             loggedin: false,
             isMobile: getViewPortWidth() <= 768
         };
@@ -23,6 +23,7 @@ class PageContainer extends Component {
         this.onResize = this.onResize.bind(this);
         this.onNavToggle = this.onNavToggle.bind(this);
         this.navigateTo = this.navigateTo.bind(this);
+        this.showRegisterationModal = this.showRegisterationModal.bind(this);
 
         setTimeout(this.getCurrentUserDetails, 10);
     }
@@ -78,6 +79,10 @@ class PageContainer extends Component {
             })
             .catch(err=> console.error);
     };
+
+    showRegisterationModal() {
+        this.setState({ registering: true });
+    }
  
     navigateTo(event) {
         if(event === 'logout') {
@@ -99,7 +104,17 @@ class PageContainer extends Component {
 
     getPage() {
         if(!this.state.loggedin) {
-            return <LoginComponent onLogin={this.onLogin} />;
+            return (
+                <React.Fragment>
+                    { this.state.registering && 
+                        <RegistrationModal 
+                            onClose={() => this.setState({registering: false})} />
+                    }
+                    <LoginComponent 
+                        onLogin={this.onLogin} 
+                        register={this.showRegisterationModal} />
+                </React.Fragment>
+            );
         }
         return (
             <Container fluid={true}>

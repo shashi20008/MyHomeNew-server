@@ -22,7 +22,7 @@ const getSwitchesDisplay = (dev, onChange) => {
                         <span className="slider"></span>
                     </label>
                 </Col>
-                <Col xs={1}>
+                {/* <Col xs={1}>
                     <SliderWithTooltip 
                         vertical 
                         onChange={onChange.bind(null, dev.name, idx)} value={switchUnit.brightness || 0} 
@@ -34,7 +34,7 @@ const getSwitchesDisplay = (dev, onChange) => {
                             'margin-left': '-8px'
                         }}
                     />
-                </Col>
+                </Col> */}
             </Row>
         );
     });

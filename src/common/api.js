@@ -31,6 +31,23 @@ export const login = (username, password) => {
   });
 };
 
+export const register = userObj => {
+  return fetch('/user/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(userObj)
+  })
+    .then(resp => {
+      if(resp.ok) {
+        return resp.json();
+      }
+      throw new Error('USER_REGISTRATION_FAILED');
+    }) 
+};
+
 export const getCurrentUserDetails = () => {
   return fetch('/user/@me')
     .then(resp => {

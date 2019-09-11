@@ -4,6 +4,7 @@ const {
 } = mongoose;
 const UserModel = require('./users');
 const _cloneDeep = require('lodash/cloneDeep');
+const _get = require('lodash/get');
 
 /**
  * Auth codes.
@@ -62,6 +63,7 @@ function revokeAuthorizationCode(code) {
  * Clients
  */
 const OAuthClientsModel = mongoose.model('OauthClients', new Schema({
+  name: String,
   id: String,
   secret: String,
   redirectUris: [String],
@@ -108,19 +110,19 @@ function getAccessToken (bearerToken) {
   })
     .then(token => Promise.all([
       token,
-      getClient(token.client),
-      UserModel.findOne({email: token.user}).lean()
+      _get(token, 'client') && getClient(token.client),
+      _get(token, 'user') && UserModel.findOne({email: token.user}).lean()
     ]))
-    .then(([token, client, user]) => Object.assign(
-      token.toJSON(),
-      {client},
-      {user}
+    .then(([token, client, user]) => Object.assign({},
+      token && token.toJSON(),
+      client && {client},
+      user && {user}
     ));
 };
 
-function revokeToken(token) {
+function revokeToken({ refreshToken }) {
   return new Promise(resolve => OAuthTokensModel.remove({
-    refreshToken: token.refreshToken
+    refreshToken
   }, err => {
     resolve(!err);
   }));
@@ -132,11 +134,11 @@ function getRefreshToken(refreshToken) {
   })
     .then(token => Promise.all([
       token,
-      getClient(token.client),
-      UserModel.findOne({email: token.user}).lean()
+      _get(token, 'client') && getClient(token.client),
+      _get(token, 'user') && UserModel.findOne({email: token.user}).lean()
     ]))
     .then(([token, client, user]) => Object.assign(
-      token.toJSON(),
+      token && token.toJSON(),
       {client},
       {user}
     ));
@@ -150,5 +152,7 @@ module.exports = {
   saveToken,
   getAccessToken,
   getRefreshToken,
-  revokeToken
+  revokeToken,
+
+  createClient
 };

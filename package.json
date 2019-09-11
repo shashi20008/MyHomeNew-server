@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "gurnt test",
-    "webpack": "webpack"
+    "start": "node index.js",
+    "build": "webpack"
   },
   "babel": {
     "presets": [
@@ -36,19 +37,21 @@
     "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "connect-sqlite3": "^0.9.11",
-    "dnssd": "^0.4.1",
     "express": "^4.16.4",
     "express-oauth-server": "^2.0.0",
     "express-session": "^1.15.6",
     "lodash": "^4.17.11",
-    "mongoose": "^4.8.0",
+    "mongoose": "^5.7.0",
     "morgan": "^1.9.1",
+    "nconf": "^0.10.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "request": "^2.88.0",
-    "sqlite3": "^4.1.0"
+    "sqlite3": "^4.1.0",
+    "uuid": "^3.3.3",
+    "websocket": "^1.0.29"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -67,6 +70,7 @@
     "style-loader": "^0.23.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
+    "webpack-dev-middleware": "^3.7.1",
     "whatwg-fetch": "^3.0.0"
   }
 }

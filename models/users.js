@@ -9,8 +9,8 @@ const UserSchema = new Schema({
     name: String,
     email: String,
     password: String,
-    googleAuthData: String,
-    amazonAuthData: String,
+    hubClientId: String,
+    hubClientSecret: String,
     createdDate: { type: Date, default: Date.now },
     updatedDate: { type: Date, default: Date.now }
 }, transformer);

@@ -1,18 +1,8 @@
 'use strict';
+
 const { authorize } = require('../libs/passport');
-const { 
-    getAvailableDevices, 
-    saveNewDeviceForUser, 
-    switchDeviceState, 
-    getDeviceConfig, 
-    getAllDevicesForUser 
-} = require('../controllers/devices');
+const { proxy } = require('../libs/proxy');
 
-module.exports = (app) => {
-    app.get('/devices/available', authorize, getAvailableDevices);
-
-    app.post('/devices', authorize, saveNewDeviceForUser);
-    app.get('/devices', authorize, getAllDevicesForUser);
-    app.post('/devices/:name', switchDeviceState);
-    app.get('/devices/:name', authorize, getDeviceConfig);
-};
+module.exports = function (app) {
+  app.use('/devices', authorize, proxy);
+}

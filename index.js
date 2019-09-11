@@ -1,3 +1,4 @@
+const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -9,12 +10,20 @@ const morgan = require('morgan');
 const routes = require('./routes');
 const DB = require('./libs/db');
 const OAuthModel = require('./models/oAuth');
+const Proxy = require('./libs/proxy');
 
 const app = express();
 app.oAuth = new OAuthServer({
     debug: true,
     model: OAuthModel
 });
+
+if(process.env.mode === 'development') {
+  const webpack = require('webpack');
+  const middleware = require('webpack-dev-middleware');
+  const compiler = webpack(require('./webpack.config'));
+  app.use(middleware(compiler, { index: false, lazy: true, publicPath: '/js/' }))
+}
 
 app.use(express.static('./dist'));
 app.use(express.static('./public'));
@@ -23,14 +32,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(morgan('tiny'));
-
-app.post('/dialog', (req, res) => {
-  // api password: *J-)hea^C>;EE7<M
-  console.log('got req');
-  console.log(JSON.stringify(req.body, null, 2));
-  console.log(JSON.stringify(req.headers, null, 2));
-  res.json({});
-});
 
 app.use(session({ 
     secret: 'keyboard cat',
@@ -47,4 +48,6 @@ routes.setupRoutes(app);
 
 DB.connect();
 
-app.listen(8090);
+const server =  http.createServer(app);
+Proxy.startWSServer(server);
+server.listen(process.env.PORT || 8000);
