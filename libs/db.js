@@ -4,7 +4,7 @@ const nconf = require('nconf');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
-nconf.env().file({ file: 'config/config.json' });
+nconf.file({ file: 'config/config.json' }).env();
 
 module.exports.connect = () => {
     const user = encodeURIComponent(nconf.get('MONGO_DB_USER'));
