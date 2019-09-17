@@ -1,6 +1,7 @@
 'use strict';
 
-export const UNAUTHORIZED = new Error('unauthorized');
+export const UNAUTHORIZED = new Error('UNAUTHORIZED');
+export const SERVER_ERROR = new Error('SERVER_ERROR');
 
 export const logout = () => {
   return fetch('/logout')
@@ -27,25 +28,8 @@ export const login = (username, password) => {
     if(resp.ok) {
       return resp.json();
     }
-    throw UNAUTHORIZED;
+    throw SERVER_ERROR;
   });
-};
-
-export const register = userObj => {
-  return fetch('/user/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(userObj)
-  })
-    .then(resp => {
-      if(resp.ok) {
-        return resp.json();
-      }
-      throw new Error('USER_REGISTRATION_FAILED');
-    }) 
 };
 
 export const getCurrentUserDetails = () => {
@@ -61,10 +45,14 @@ export const getCurrentUserDetails = () => {
 export const getExistingDevices = () => {
   return fetch('/devices')
     .then(resp => {
+      if(resp.status === 401) {
+        throw UNAUTHORIZED;
+      }
+
       if(resp.ok) {
         return resp.json();
       }
-      throw UNAUTHORIZED;
+      throw SERVER_ERROR;
     });
 };
 
@@ -74,7 +62,7 @@ export const getKnownDeviceList = () => {
       if(resp.ok) {
         return resp.json();
       }
-      throw UNAUTHORIZED;
+      throw SERVER_ERROR;
     });
 };
 
@@ -91,7 +79,7 @@ export const saveDeviceForUser = (body) => {
       if(resp.ok) {
         return resp.json();
       }
-      throw UNAUTHORIZED;
+      throw SERVER_ERROR;
     });
 };
 
@@ -111,6 +99,6 @@ export const updateDeviceState = (device, switchId, newState) => {
       if(resp.ok) {
         return resp.json();
       }
-      throw UNAUTHORIZED;
+      throw SERVER_ERROR;
     });
 };

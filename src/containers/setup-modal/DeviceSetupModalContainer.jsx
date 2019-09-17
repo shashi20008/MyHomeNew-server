@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap';
+import _get from 'lodash';
 
 import * as API from '../../common/api';
 import GenericSetup from './generic-setup';
@@ -13,8 +14,6 @@ class DeviceSetupModalContainer extends Component {
       loading: true,
       leads: {}
     };
-
-    this.roomRef = React.createRef();
 
     this.addDevice = this.addDevice.bind(this);
     this.updateSetupComponent = this.updateSetupComponent.bind(this);
@@ -55,8 +54,8 @@ class DeviceSetupModalContainer extends Component {
   }
 
   addDevice() {
-    if(!this.state.selectedDevice || !this.state.deviceLabel || !this.roomRef.current.value) {
-      console.log('validation failed!')
+    if(!this.state.selectedDevice || !this.state.deviceLabel || !this.state.room) {
+      console.log('validation failed!', !this.state.selectedDevice, !this.state.deviceLabel, !this.state.room)
       return;
     }
     
@@ -69,12 +68,13 @@ class DeviceSetupModalContainer extends Component {
 
     const request = {
       name: this.state.selectedDevice,
-      label: this.deviceLabelRef.current.value,
-      room: this.roomRef.current.value,
+      label: this.state.deviceLabel,
+      room: this.state.room,
       leads: selectedInputs.map(id=> {
         const thisSwitch = this.state.leads[id];
         return {
           devId: id,
+          type: thisSwitch.type,
           label: thisSwitch.label
         }
       })
@@ -91,20 +91,26 @@ class DeviceSetupModalContainer extends Component {
 
   updateSetupComponent(event) {
     const devName = event.target.value;
-    const devType = this.state.devices[devName].type;
+    const devType = _get(this.state, `devices[${devName}].type`);
 
-    if(devType === 'light') {
-      this.SetupComponent = LightSetup
+    if(devName === '') {
+      this.SetupComponent = null;
+      return this.setState({ selectedDevice: null });
     }
-    else if(devType === 'switch') {
-      this.SetupComponent = SwitchSetup
-    }
-    else {
+
+
+    // if(devType === 'light') {
+    //   this.SetupComponent = LightSetup
+    // }
+    // else if(devType === 'switch') {
+    //   this.SetupComponent = SwitchSetup
+    // }
+    // else {
       this.SetupComponent = GenericSetup;
-    }
+    // }
 
     this.setState({
-      devType
+      selectedDevice: devName
     });
   }
 
@@ -119,19 +125,19 @@ class DeviceSetupModalContainer extends Component {
       return (
         <div>
           <Form.Label>Available devices</Form.Label>
-          <Form.Control as="select" onChange={this.updateSetupComponent}>
+          <Form.Control className="form-group" as="select" onChange={this.updateSetupComponent}>
             <option value="">Select one</option>
             {
                 Object.keys(this.state.devices || {}).map(device => <option value={device}>{device}</option>)
             }
           </Form.Control>
-          <Form.Label style={formFieldsStyle}>Room</Form.Label>
-          <Form.Control placeholder="which room is this device in?" ref={this.roomRef}></Form.Control>
           
-          <this.SetupComponent 
-            updateValue={this.updateValue}
-            updateLead={this.updateLead} />
-          
+          {
+            this.SetupComponent && <this.SetupComponent 
+              updateValue={this.updateValue}
+              updateLead={this.updateLead} /> ||
+            <span>Please select a device to configure</span>
+          }
           <Form.Group>
             <Button variant="primary" size="medium" style={{
               'margin-top': '20px',

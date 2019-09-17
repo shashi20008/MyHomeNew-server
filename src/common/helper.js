@@ -15,7 +15,7 @@ export const findParent = (parentClassName, thisElem, maxLevels = 10) => {
   }
 
   let theParent = thisElem
-  while(theParent && !theParent.classList.includes(parentClassName)) {
+  while(theParent && !theParent.className.includes(parentClassName)) {
     theParent = theParent.parentElement;
   };
   return theParent;

@@ -28,7 +28,6 @@ export default (props) => {
                     </Col>
                 </Row>
             </Form>
-            <a href="#" onClick={props.register}>Register</a>
         </Container>
     );
 };
