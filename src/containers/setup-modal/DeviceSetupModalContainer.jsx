@@ -7,6 +7,10 @@ import GenericSetup from './generic-setup';
 import LightSetup from './light-setup';
 import SwitchSetup from './switch-setup';
 
+const formFieldsStyle = {
+  'margin-top': '1rem'
+};
+
 class DeviceSetupModalContainer extends Component {
   constructor(props) {
     super(props);
