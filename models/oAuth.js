@@ -113,11 +113,17 @@ function getAccessToken (bearerToken) {
       _get(token, 'client') && getClient(token.client),
       _get(token, 'user') && UserModel.findOne({email: token.user}).lean()
     ]))
-    .then(([token, client, user]) => Object.assign({},
-      token && token.toJSON(),
-      client && {client},
-      user && {user}
-    ));
+    .then(([token, client, user]) => {
+      if (!token || !client || !user) {
+        return null;
+      }
+
+      return Object.assign({ client, user }, token.toJSON());
+    })
+    .catch(err => {
+      console.log(err.stack);
+      return null;
+    });
 };
 
 function revokeToken({ refreshToken }) {
